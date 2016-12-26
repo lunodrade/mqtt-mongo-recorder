@@ -24,12 +24,20 @@ mongodb.MongoClient.connect(mongoUri, function(error, database) {
     }
 
     var collection = database.collection(config.mongodb.collection);
-    collection.createIndex( { "topic" : 1 } );
+    collection.createIndex( { "topic" : 1 , "ts" : -1} );
 
     client.on('message', function (topic, message) {
+        var json = {};
+        try {
+            json = JSON.parse(String(message));
+        } catch (e) {
+            console.log(e);
+        }
         var messageObject = {
+            ts: new Date(),
             topic: topic,
-            message: message.toString()
+            message: message.toString(),
+            json: json
         };
 
         collection.insert(messageObject, function(error, result) {
