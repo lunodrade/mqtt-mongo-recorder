@@ -24,7 +24,8 @@ mongodb.MongoClient.connect(mongoUri, function(error, database) {
     }
 
     var collection = database.collection(config.mongodb.collection);
-    collection.createIndex( { "topic" : 1 , "ts" : -1} );
+    collection.createIndex({ "ts": -1 });
+    collection.createIndex({ "topic": 1 });
 
     client.on('message', function (topic, message) {
         var json = {};
