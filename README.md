@@ -8,7 +8,7 @@ Example
 
 Clone the repository
 ```bash
-$ git clone https://github.com/dennisdegreef/mqtt-mongo-recorder.git
+$ git clone https://github.com/inhedron/mqtt-mongo-recorder.git
 $ cd mqtt-mongo-recorder
 $ npm install
 ```
