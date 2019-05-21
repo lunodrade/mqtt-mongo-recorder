@@ -50,7 +50,7 @@ Let's see what's in here (or use Mongo Compass to visualize)
 ```bash
 $ mongo
 > use mqtt
-> db.message.find();
+> db.mqtt.find();
 ```
 
 Error handling
