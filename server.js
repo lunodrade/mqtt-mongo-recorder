@@ -10,6 +10,8 @@ var mongodb  = require('mongodb');
 var mqtt     = require('mqtt');
 var config   = require('./config');
 
+//Se o MongoDB tiver senha, então precisa ser o abaixo:
+//var mqttUri  = 'mqtt://' config.mongodb.user + ':' config.mongodb.pass + '@' + config.mqtt.hostname + ':' + config.mqtt.port;
 var mqttUri  = 'mqtt://' + config.mqtt.hostname + ':' + config.mqtt.port;
 var client   = mqtt.connect(mqttUri);
 
@@ -34,12 +36,30 @@ mongodb.MongoClient.connect(mongoUri, function(error, database) {
         } catch (e) {
             console.log(e);
         }
+
+        /////////////////////////////// Config Msg format ///////////////////////////////
         var messageObject = {
-            ts: new Date(),
-            topic: topic,
-            message: message.toString(),
-            json: json
+            /* ts: new Date(),              //mongo _id já tem timestamp incluso */
+            /* msg: message.toString(),     //when not using json format         */
+            topic: topic
         };
+        //Json format
+        strrepl = String(config.mqtt.namespace).replace("#", "");
+        key = topic.replace(strrepl, "");
+        messageObject[key] = json;
+        ////////Eg:
+        // → mosquitto_pub -m "{ \"age\": 35 }" -t "/MIGRA/0000001"
+        // 
+        //------------ result:
+        //
+        // _id: ObjectId("5ce425b7aec5d32068435afd")
+        // ts: 2019-05-21T16:22:15.854+00:00
+        // topic: "/MIGRA/0000001"
+        // 0000001: JSON {
+        //    age: 45,
+        //    nome: "fulano"
+        // }
+        //////////////////////////////////////////////////////////////////////////////////
 
         collection.insert(messageObject, function(error, result) {
             if(error != null) {
