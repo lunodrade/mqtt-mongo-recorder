@@ -37,11 +37,11 @@ $ mosquitto_pub -m "{ \"age\": 35, \"nome\": \"fulano\" }" -t "/MIGRA/0000001"
 ```
 
 In the file Config.js at line `config.mqtt.namespace` you configure subscribe filter, eg:
-```mk
+```bash
 → config.mqtt.namespace = "#"
 mosquitto_pub -m "{ \"age\": 35 }" -t "0000001"
 ```
-```mk
+```bash
 → config.mqtt.namespace = "/MIGRA/#"
 mosquitto_pub -m "{ \"age\": 35 }" -t "/MIGRA/0000001"
 ```
