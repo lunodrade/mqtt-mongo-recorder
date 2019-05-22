@@ -36,7 +36,6 @@ mongodb.MongoClient.connect(mongoUri, function(error, database) {
         } catch (e) {
             console.log(e);
         }
-
         /////////////////////////////// Config Msg format ///////////////////////////////
         var messageObject = {
             /* ts: new Date(),              //mongo _id já tem timestamp incluso */
