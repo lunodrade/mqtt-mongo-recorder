@@ -36,12 +36,12 @@ Publish some MQTT messages to try it out (I use mosquitto server for this, but w
 $ mosquitto_pub -m "{ \"age\": 35, \"nome\": \"fulano\" }" -t "/MIGRA/0000001"
 ```
 
-In the file Config.js at line `config.mqtt.namespace` you configure subscribe filter, eg:
-```mk
+In the file Config.js at line `config.mqtt.namespace` you can configure subscribe filter, eg:
+```bash
 → config.mqtt.namespace = "#"
 mosquitto_pub -m "{ \"age\": 35 }" -t "0000001"
 ```
-```mk
+```bash
 → config.mqtt.namespace = "/MIGRA/#"
 mosquitto_pub -m "{ \"age\": 35 }" -t "/MIGRA/0000001"
 ```
@@ -50,7 +50,7 @@ Let's see what's in here (or use Mongo Compass to visualize)
 ```bash
 $ mongo
 > use mqtt
-> db.message.find();
+> db.mqtt.find();
 ```
 
 Error handling
