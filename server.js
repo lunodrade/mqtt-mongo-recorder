@@ -44,8 +44,7 @@ mongodb.MongoClient.connect(mongoUri, function(error, database) {
         };
         //Json format
         strrepl = String(config.mqtt.namespace).replace("#", "");
-        key = topic.replace(strrepl, "");
-        key = topic.replace("/json", "");
+        key = topic.replace(strrepl, "").replace("/json", "");
         messageObject[key] = json;
         ////////Eg:
         // → mosquitto_pub -m "{ \"age\": 35 }" -t "/MIGRA/0000001/json"
