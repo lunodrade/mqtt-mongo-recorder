@@ -45,15 +45,16 @@ mongodb.MongoClient.connect(mongoUri, function(error, database) {
         //Json format
         strrepl = String(config.mqtt.namespace).replace("#", "");
         key = topic.replace(strrepl, "");
+        key = topic.replace("/json", "");
         messageObject[key] = json;
         ////////Eg:
-        // → mosquitto_pub -m "{ \"age\": 35 }" -t "/MIGRA/0000001"
+        // → mosquitto_pub -m "{ \"age\": 35 }" -t "/MIGRA/0000001/json"
         // 
         //------------ result:
         //
         // _id: ObjectId("5ce425b7aec5d32068435afd")
         // ts: 2019-05-21T16:22:15.854+00:00
-        // topic: "/MIGRA/0000001"
+        // topic: "/MIGRA/0000001/json"
         // 0000001: JSON {
         //    age: 45,
         //    nome: "fulano"
