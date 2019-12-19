@@ -6,28 +6,48 @@
  * @license MIT
  *
  */
-var mongodb  = require('mongodb');
-var mqtt     = require('mqtt');
-var config   = require('./config');
+var mongodb = require('mongodb');
+var mqtt = require('mqtt');
+var config = require('./config');
 
 //Se o MongoDB tiver senha, então precisa ser o abaixo:
 //var mqttUri  = 'mqtt://' config.mongodb.user + ':' config.mongodb.pass + '@' + config.mqtt.hostname + ':' + config.mqtt.port;
-var mqttUri  = 'mqtt://' + config.mqtt.hostname + ':' + config.mqtt.port;
-var client   = mqtt.connect(mqttUri);
+var mqttUri = 'mqtt://' + config.mqtt.hostname + ':' + config.mqtt.port;
+var client = mqtt.connect(mqttUri);
 
 client.on('connect', function () {
     client.subscribe(config.mqtt.namespace);
+    console.log('conectado');
 });
 
-var mongoUri = 'mongodb://' + config.mongodb.hostname + ':' + config.mongodb.port + '/' + config.mongodb.database;
-mongodb.MongoClient.connect(mongoUri, function(error, database) {
-    if(error != null) {
+var mongoUri =
+    'mongodb://' +
+    config.mongodb.hostname +
+    ':' +
+    config.mongodb.port +
+    '/' +
+    config.mongodb.database;
+
+mongodb.MongoClient.connect(mongoUri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+}, function (error, clientx) {
+    console.log('a');
+
+    if (error != null) {
         throw error;
     }
 
+    var database = clientx.db(config.mongodb.database);
     var collection = database.collection(config.mongodb.collection);
-    collection.createIndex({ "ts": -1 });
-    collection.createIndex({ "topic": 1 });
+    /*
+    collection.createIndex({
+        timestamp: -1
+    });
+    collection.createIndex({
+        topic: 1
+    });
+    */
 
     client.on('message', function (topic, message) {
         var json = {};
@@ -38,17 +58,18 @@ mongodb.MongoClient.connect(mongoUri, function(error, database) {
         }
         /////////////////////////////// Config Msg format ///////////////////////////////
         var messageObject = {
-            /* ts: new Date(),              //mongo _id já tem timestamp incluso */
-            /* msg: message.toString(),     //when not using json format         */
-            topic: topic
+            timestamp: new Date().toString(), //mongo _id já tem timestamp incluso 
+            //msg: message.toString(), //when not using json format         
+            //topic: topic
         };
         //Json format
-        strrepl = String(config.mqtt.namespace).replace("#", "");
-        key = topic.replace(strrepl, "").replace("/json", "");
-        messageObject[key] = json;
+        // strrepl = String(config.mqtt.namespace).replace('#', '');
+        // key = topic.replace(strrepl, '').replace('/json', '');
+        // messageObject[key] = json;
+        messageObject[topic] = json;
         ////////Eg:
         // → mosquitto_pub -m "{ \"age\": 35 }" -t "/MIGRA/0000001/json"
-        // 
+        //
         //------------ result:
         //
         // _id: ObjectId("5ce425b7aec5d32068435afd")
@@ -60,9 +81,9 @@ mongodb.MongoClient.connect(mongoUri, function(error, database) {
         // }
         //////////////////////////////////////////////////////////////////////////////////
 
-        collection.insert(messageObject, function(error, result) {
-            if(error != null) {
-                console.log("ERROR: " + error);
+        collection.insertOne(messageObject, function (error, result) {
+            if (error != null) {
+                console.log('ERROR: ' + error);
             }
         });
     });
